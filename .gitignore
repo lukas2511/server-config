@@ -1,0 +1,7 @@
+# super secret
+config.py
+
+# cache stuff
+__pycache__
+*.pyc
+

@@ -1,0 +1,29 @@
+from fabric.api import *
+import os
+
+dns_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dns')
+
+zones = ['example.org', 'example.com']
+
+update_secret = "yolo1"
+
+dns_master = "192.168.100.1"
+
+dns_slaves = [
+    {
+        'name': 'ns2',
+        'address': '192.168.100.2',
+        'secret': 'yolo2',
+    },
+    {
+        'name': 'ns3',
+        'address': '192.168.100.3',
+        'secret': 'yolo3',
+    },
+]
+
+if not env.hosts:
+    env.hosts = list(slave['address'] for slave in dns_slaves)
+    env.hosts.reverse()
+    env.hosts.append(dns_master)
+    env.hosts.reverse()
