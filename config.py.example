@@ -1,9 +1,14 @@
 from fabric.api import *
 import os
+from glob import glob
 
 dns_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dns')
 
-zones = ['example.org', 'example.com']
+base_dir = os.path.dirname(os.path.realpath(__file__))
+dns_dir = os.path.join(base_dir, 'dns')
+zones_dir = os.path.join(dns_dir, 'zones')
+
+zones = list(os.path.basename(zonefile) for zonefile in glob(os.path.join(zones_dir,"*")) if not zonefile[-5:] == '.zone')
 
 update_secret = "yolo1"
 

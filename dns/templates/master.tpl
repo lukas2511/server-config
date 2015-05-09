@@ -9,9 +9,11 @@ server:
 
 key:
 {% for slave in slaves %}
+{% if slave.secret %}
   - id: key_{{ slave.name }}
     algorithm: hmac-md5
     secret: {{ slave.secret }}
+{% endif %}
 {% endfor %}
   - id: key_update
     algorithm: hmac-md5
@@ -21,14 +23,18 @@ remote:
 {% for slave in slaves %}
   - id: {{ slave.name }}
     address: {{ slave.address }}@53
+{% if slave.secret %}
     key: key_{{ slave.name }}
+{% endif %}
 {% endfor %}
 
 acl:
 {% for slave in slaves %}
   - id: acl_{{ slave.name }}
     address: {{ slave.address }}
+{% if slave.secret %}
     key: key_{{ slave.name }}
+{% endif %}
     action: xfer
 {% endfor %}
   - id: acl_update

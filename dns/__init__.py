@@ -33,6 +33,7 @@ def configure_knot_master():
         if not exists("/var/lib/knot/kasp/zone_%s.json" % zone):
             with cd("/var/lib/knot/kasp"):
                 run("keymgr zone add %s policy default_rsa" % zone)
+    put(os.path.join(zones_dir, '*.*'), "/var/lib/knot/master/")
 
     context = {
         'zones': zones,
@@ -60,8 +61,6 @@ def configure_knot_slave():
 
 @task(default=True)
 def knot():
-    setup_knot()
-
     if env.host == dns_master:
         configure_knot_master()
     else:

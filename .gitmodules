@@ -1,0 +1,3 @@
+[submodule "dns/rautemett"]
+	path = dns/rautemett
+	url = https://github.com/rautemett/DNS
