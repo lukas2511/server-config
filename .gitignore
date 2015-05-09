@@ -1,6 +1,5 @@
 # super secret
-config.py
-/dns/zones
+/private
 
 # cache stuff
 __pycache__
