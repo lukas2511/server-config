@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set $SSH_ORIGINAL_COMMAND
+
+case "${1}" in
+  "check_apt")
+    /usr/lib/nagios/plugins/check_apt
+    ;;
+  "check_disk")
+    /usr/lib/nagios/plugins/check_disk -w "${1}" -c "${2}" -A -i "/var/lib/docker/aufs.*"
+    ;;
+  "check_load" | \
+  "check_procs" | \
+  "check_swap")
+    /usr/lib/nagios/plugins/"${1}" -w "${2}" -c "${3}"
+    ;;
+  *)
+    echo "CRITICAL"
+    exit 1
+    ;;
+esac
+

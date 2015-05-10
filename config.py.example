@@ -4,6 +4,12 @@ from glob import glob
 
 base_dir = os.path.dirname(env.real_fabfile)
 
+# monitoring
+
+monitoring_host = "example.com"
+monitoring_pubkey = "ssh-ed25519 AAAABBBBBCCCCCCDDDDDDDEEEEEEFFFFF yolo@example.com"
+monitoring_remotes = ['ns1.example.com', 'ns2.example.com']
+
 # dns
 
 dns_dir = os.path.join(base_dir, 'dns')
@@ -35,5 +41,7 @@ env.parallel = True
 env.roledefs = {
     'dns_master': [dns_master],
     'dns_slaves': list(slave['address'] for slave in dns_slaves),
+    'monitoring_host': [monitoring_host],
+    'monitoring_remotes': monitoring_remotes,
 }
 
