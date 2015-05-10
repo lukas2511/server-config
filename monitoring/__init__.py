@@ -12,20 +12,20 @@ hosts_dir = os.path.join(base_dir, "monitoring/hosts")
 @roles('monitoring_host')
 def setup_monitoring_host():
     rsync_project(local_dir=("%s/" % hosts_dir), remote_dir="/etc/icinga2/conf.d/hosts", delete=True)
+    put(os.path.join(files_dir, "custom_commands.conf"), "/etc/icinga2/conf.d/custom_commands.conf", mode=0755)
     run("systemctl reload icinga2")
 
 @roles('monitoring_remotes')
 def setup_monitoring_remote():
-    run("apt-get update -qq")
-    run("apt-get install monitoring-plugins-basic -qq -y")
-
     if not exists("/var/lib/nagios"):
+        run("apt-get update -qq")
+        run("apt-get install monitoring-plugins-basic -qq -y")
         run("useradd --create-home --home /var/lib/nagios --shell /bin/bash --system nagios")
-    if not exists("/var/lib/nagios/.ssh"):
-        run("mkdir /var/lib/nagios/.ssh")
 
     put(os.path.join(files_dir, "nagios-shell"), "/usr/local/bin/nagios-shell", mode=0755)
 
+    if not exists("/var/lib/nagios/.ssh"):
+        run("mkdir /var/lib/nagios/.ssh")
     output = StringIO()
     output.write('command="/usr/local/bin/nagios-shell",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty ')
     output.write(monitoring_pubkey)
