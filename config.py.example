@@ -2,9 +2,10 @@ from fabric.api import *
 import os
 from glob import glob
 
-dns_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dns')
+base_dir = os.path.dirname(env.real_fabfile)
 
-base_dir = os.path.dirname(os.path.realpath(__file__))
+# dns
+
 dns_dir = os.path.join(base_dir, 'dns')
 zones_dir = os.path.join(dns_dir, 'zones')
 
@@ -27,8 +28,12 @@ dns_slaves = [
     },
 ]
 
-if not env.hosts:
-    env.hosts = list(slave['address'] for slave in dns_slaves)
-    env.hosts.reverse()
-    env.hosts.append(dns_master)
-    env.hosts.reverse()
+# hosts
+
+env.parallel = True
+
+env.roledefs = {
+    'dns_master': [dns_master],
+    'dns_slaves': list(slave['address'] for slave in dns_slaves),
+}
+

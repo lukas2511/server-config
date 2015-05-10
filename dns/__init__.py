@@ -1,6 +1,7 @@
 import os
 from fabric.api import *
 from fabric.contrib.files import *
+from fabric.contrib.project import *
 from glob import glob
 from config import *
 
@@ -28,12 +29,13 @@ def setup_knot():
         if not exists("slave"):
             run("mkdir slave")
 
+@roles('dns_master')
 def configure_knot_master():
     for zone in zones:
         if not exists("/var/lib/knot/kasp/zone_%s.json" % zone):
             with cd("/var/lib/knot/kasp"):
                 run("keymgr zone add %s policy default_rsa" % zone)
-    put(os.path.join(zones_dir, '*.*'), "/var/lib/knot/master/")
+    rsync_project(local_dir=("%s/" % zones_dir), remote_dir="/var/lib/knot/master", delete=False, extra_opts='--links')
 
     context = {
         'zones': zones,
@@ -47,6 +49,7 @@ def configure_knot_master():
     run("chown -R knot: /var/lib/knot")
     run("systemctl reload knot")
 
+@roles('dns_slaves')
 def configure_knot_slave():
     context = {
         'zones': zones,
@@ -60,9 +63,6 @@ def configure_knot_slave():
     run("systemctl reload knot")
 
 @task(default=True)
-def knot():
-    if env.host == dns_master:
-        configure_knot_master()
-    else:
-        configure_knot_slave()
-
+def dns():
+    execute(configure_knot_master)
+    execute(configure_knot_slave)
