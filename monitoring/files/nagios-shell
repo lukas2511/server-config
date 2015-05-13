@@ -9,7 +9,7 @@ set $SSH_ORIGINAL_COMMAND
 
 case "${1}" in
 	"check_apt")
-		/usr/lib/nagios/plugins/check_apt
+		/usr/lib/nagios/plugins/check_apt -t $(if [ "${2}" ]; then echo "${2}"; else echo 10; fi)
 		;;
 	"check_disk")
 		/usr/lib/nagios/plugins/check_disk -w "${1}" -c "${2}" -A -i "/var/lib/docker/aufs.*"
